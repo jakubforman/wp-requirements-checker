@@ -1,0 +1,57 @@
+{
+  "name": "jayjay666/wp-requirements-checker",
+  "type": "library",
+  "description": "Utility for WordPress plugin developers to check requirements. Lightweight library class for validation PHP version, PHP extensions, plugins and theirs versions in Wordpress Plugins.",
+  "homepage": "https://github.com/jayjay666/wp-requirements-checker",
+  "license": "GPL-2.0+",
+  "keywords": [
+    "WP",
+    "WP Plugin",
+    "WordPress",
+    "WordPress Plugin",
+    "WordPress Plugin Validator",
+    "WordPress Plugin Validator Requirements",
+    "WordPress Plugin Validator Requirements Checker",
+    "WordPress Requirements Checker",
+    "WordPress Requirements",
+    "WordPress Plugin Development"
+  ],
+  "authors": [
+    {
+      "name": "Jakub Josef Forman",
+      "email": "dev@jakubforman.com",
+      "homepage": "https://jakubforman.eu",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "jayjay666\\WPRequirementsChecker\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/"
+    ]
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require-dev": {
+    "phpunit/phpunit": "^7",
+    "lipemat/wp-unit": "^1.12"
+  },
+  "scripts": {
+    "test": [
+      "vendor/bin/phpunit --testsuite CheckWPRequirements"
+    ],
+    "coverage": [
+      "@composer test -- --coverage-html tests/coverage"
+    ],
+    "phpcs": [
+      "vendor/bin/phpcs -p -s class-wp-requirements.php tests/ --extensions=php"
+    ]
+  }
+}
