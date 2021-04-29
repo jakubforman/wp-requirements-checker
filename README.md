@@ -19,7 +19,7 @@ $validator = new Validator('7.1', 'my-awesome-plugin/my-awesome-plugin.php', 'my
 
 // Set plugins requirements
 $validator->add_required_plugin('woocommerce/woocommerce','1.2.1');
-$validator->addRequiredPlugin('elementor/elementor.php','3.0');
+$validator->add_required_plugin('elementor/elementor.php','3.0');
 
 // Set PHP extensions requirements
 $validator->add_required_extensions('curl');
@@ -92,7 +92,7 @@ class MyAwesomePlugin{
         $validator = new Validator('7.1', 'my-awesome-plugin/my-awesome-plugin.php', MyAwesomePlugin::DOMAIN);
         // OR $validator = new Validator('7.1', 'my-awesome-plugin/my-awesome-plugin.php', self::DOMAIN);
 
-        $validator->addRequiredPlugin('elementor/elementor.php','3.0');
+        $validator->add_required_plugin('elementor/elementor.php','3.0');
         if (!$validator->check()) {
             return;
         }
