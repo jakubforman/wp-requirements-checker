@@ -2,6 +2,7 @@
 namespace jayjay666\WPRequirementsChecker\Tests;
 
 use jayjay666\WPRequirementsChecker\Validator;
+use ReflectionException;
 use WP_UnitTestCase;
 require __DIR__ . '/bootstrap.php';
 
@@ -35,8 +36,9 @@ class TestCase extends WP_UnitTestCase
      * @param string $classname Optional. The class to use for accessing private properties.
      *
      * @return mixed Method return.
+     * @throws ReflectionException
      */
-    protected function invokeMethod($object, $method_name, array $parameters = [], $classname = '')
+    protected function invoke_method($object, $method_name, array $parameters = [], $classname = '')
     {
         if (empty($classname)) {
             $classname = get_class($object);
@@ -57,8 +59,9 @@ class TestCase extends WP_UnitTestCase
      * @param array $parameters Array of parameters to pass into method.
      *
      * @return mixed Method return.
+     * @throws ReflectionException
      */
-    protected function invokeStaticMethod($classname, $method_name, array $parameters = [])
+    protected function invoke_static_method($classname, $method_name, array $parameters = [])
     {
         $reflection = new \ReflectionClass($classname);
         $method = $reflection->getMethod($method_name);
@@ -73,8 +76,9 @@ class TestCase extends WP_UnitTestCase
      * @param string $classname A class whose property we will access.
      * @param string $property_name Property to set.
      * @param mixed|null $value The new value.
+     * @throws ReflectionException
      */
-    protected function setStaticValue($classname, $property_name, $value)
+    protected function set_static_value($classname, $property_name, $value)
     {
         $reflection = new \ReflectionClass($classname);
         $property = $reflection->getProperty($property_name);
@@ -89,8 +93,9 @@ class TestCase extends WP_UnitTestCase
      * @param string $property_name Property to set.
      * @param mixed|null $value The new value.
      * @param string $classname Optional. The class to use for accessing private properties.
+     * @throws ReflectionException
      */
-    protected function setValue($object, $property_name, $value, $classname = '')
+    protected function set_value($object, $property_name, $value, $classname = '')
     {
         if (empty($classname)) {
             $classname = get_class($object);
@@ -109,8 +114,9 @@ class TestCase extends WP_UnitTestCase
      * @param string $property_name Property to set.
      *
      * @return mixed
+     * @throws ReflectionException
      */
-    protected function getStaticValue($classname, $property_name)
+    protected function get_static_value($classname, $property_name)
     {
         $reflection = new \ReflectionClass($classname);
         $property = $reflection->getProperty($property_name);
@@ -127,8 +133,9 @@ class TestCase extends WP_UnitTestCase
      * @param string $classname Optional. The class to use for accessing private properties.
      *
      * @return mixed
+     * @throws ReflectionException
      */
-    protected function getValue($object, $property_name, $classname = '')
+    protected function get_value($object, $property_name, $classname = '')
     {
         if (empty($classname)) {
             $classname = get_class($object);
@@ -148,8 +155,9 @@ class TestCase extends WP_UnitTestCase
      * @param string $attribute The attribute name.
      * @param object $object The object.
      * @param string $message Optional. Default ''.
+     * @throws ReflectionException
      */
-    protected function assertAttributeArrayHasKey($key, $attribute, $object, $message = '')
+    protected function assert_attribute_array_has_key($key, $attribute, $object, $message = '')
     {
         $ref = new \ReflectionClass(get_class($object));
         $prop = $ref->getProperty($attribute);
@@ -165,8 +173,9 @@ class TestCase extends WP_UnitTestCase
      * @param string $attribute The attribute name.
      * @param object $object The object.
      * @param string $message Optional. Default ''.
+     * @throws ReflectionException
      */
-    protected function assertAttributeArrayNotHasKey($key, $attribute, $object, $message = '')
+    protected function assert_attribute_array_not_has_key($key, $attribute, $object, $message = '')
     {
         $ref = new \ReflectionClass(get_class($object));
         $prop = $ref->getProperty($attribute);

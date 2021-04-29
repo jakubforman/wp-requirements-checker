@@ -18,11 +18,11 @@ use jayjay666\WPRequirementsChecker\Validator;
 $validator = new Validator('7.1', 'my-awesome-plugin/my-awesome-plugin.php', 'my-awesome-plugin');
 
 // Set plugins requirements
-$validator->addRequiredPlugin('woocommerce/woocommerce','1.2.1');
+$validator->add_required_plugin('woocommerce/woocommerce','1.2.1');
 $validator->addRequiredPlugin('elementor/elementor.php','3.0');
 
 // Set PHP extensions requirements
-$validator->addRequiredExtensions('curl');
+$validator->add_required_extensions('curl');
 
 if (!$validator->check()) {
     // ... min. requirements not valid. Automatic print error & disable plugin in check() method ad break code

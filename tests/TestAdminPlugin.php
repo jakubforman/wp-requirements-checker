@@ -33,9 +33,9 @@ class TestAdminPlugin extends TestCase
      */
     function testAddRequiredExtensionArray()
     {
-        $validator = $this->validator->addRequiredExtensions('curl');
-        $requiredExtensions = $this->getValue($validator, 'requiredExtensions');;
-        $this->assertTrue(in_array('curl', $requiredExtensions) && count($requiredExtensions) == 1);
+        $validator = $this->validator->add_required_extensions('curl');
+        $required_extensions = $this->get_value($validator, 'required_extensions');;
+        $this->assertTrue(in_array('curl', $required_extensions) && count($required_extensions) == 1);
     }
 
     /**
@@ -43,23 +43,23 @@ class TestAdminPlugin extends TestCase
      */
     function testAddRequiredPluginsArray()
     {
-        $pluginsRequired = [
+        $plugins_required = [
             'elementor/elementor.php' => '3.1.1',
             'woocommerce/woocommerce.php' => '1.2',
         ];
 
-        foreach ($pluginsRequired as $plugin => $version) {
-            $this->validator->addRequiredPlugin($plugin, $version);
+        foreach ($plugins_required as $plugin => $version) {
+            $this->validator->add_required_plugin($plugin, $version);
         }
 
-        $requiredExtensions = $this->getValue($this->validator, 'requiredPlugins');
+        $required_plugins = $this->get_value($this->validator, 'required_plugins');
 
         // map as version
         $compare1 = array_map(function ($array) {
             return $array['version'];
-        }, $requiredExtensions);
+        }, $required_plugins);
 
-        $this->assertTrue(count(array_diff($compare1, $pluginsRequired)) == 0, 'Required plugins not same!');
+        $this->assertTrue(count(array_diff($compare1, $plugins_required)) == 0, 'Required plugins not same!');
     }
 
 

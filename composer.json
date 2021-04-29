@@ -29,7 +29,8 @@
   },
   "autoload": {
     "psr-4": {
-      "jayjay666\\WPRequirementsChecker\\": "src/"
+      "jayjay666\\WPRequirementsChecker\\": "src/",
+      "jayjay666\\WPRequirementsChecker\\Tests\\": "tests/"
     }
   },
   "autoload-dev": {

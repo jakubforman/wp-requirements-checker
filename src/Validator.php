@@ -18,7 +18,7 @@ class Validator
      * @var bool
      * @since 1.0
      */
-    protected $deactivateAutomatically = true;
+    protected $deactivate_automatically = true;
 
     /**
      * Text domain of plugin
@@ -42,7 +42,7 @@ class Validator
      * @var array
      * @since 1.0
      */
-    private $pluginData = [];
+    private $plugin_data = [];
 
     /**
      * List of requirements errors
@@ -50,7 +50,7 @@ class Validator
      * @var array
      * @since 1.0
      */
-    protected $requirementsErrors = [];
+    protected $requirements_errors = [];
 
     /**
      * List of requirements PHP extensions
@@ -58,7 +58,7 @@ class Validator
      * @var string[]
      * @since 1.0
      */
-    protected $requiredExtensions = [
+    protected $required_extensions = [
         // 'curl'
     ];
 
@@ -68,7 +68,7 @@ class Validator
      * @var string
      * @since 1.0
      */
-    protected $requiredPhpVersion = '7.0';
+    protected $required_php_version = '7.0';
 
     /**
      * Group of required plugins
@@ -76,7 +76,7 @@ class Validator
      * @var array
      * @since 1.0
      */
-    protected $requiredPlugins = [
+    protected $required_plugins = [
         /*
         'elementor/elementor.php' => [
             'version' => '4.0.0',
@@ -87,31 +87,31 @@ class Validator
 
     /**
      * Validator constructor.
-     * @param string $requiredPhpVersion Minimum PHP version
+     * @param string $required_php_version Minimum PHP version
      * @param string $plugin Plugin base file path. Example: 'my-awesome-plugin/my-awesome-plugin.php'
-     * @param string $textDomain Text domain of plugin
-     * @param bool $deactivateAutomatically Can automatic deactivate plugin?
+     * @param string $text_domain Text domain of plugin
+     * @param bool $deactivate_automatically Can automatic deactivate plugin?
      */
-    public function __construct(string $requiredPhpVersion, string $plugin, string $textDomain, $deactivateAutomatically = true)
+    public function __construct(string $required_php_version, string $plugin, string $text_domain, $deactivate_automatically = true)
     {
         // Set PHP version
-        $this->requiredPhpVersion = $requiredPhpVersion;
+        $this->required_php_version = $required_php_version;
 
         // Set plugin base file path
         $this->plugin = $plugin;
 
         // Set Text domain of plugin
-        $this->text_domain = $textDomain;
+        $this->text_domain = $text_domain;
 
         // Set automatic deactivation
-        $this->deactivateAutomatically = $deactivateAutomatically;
+        $this->deactivate_automatically = $deactivate_automatically;
 
 
         // add functions only in admin for better performance & security issue
         if (is_admin()) {
             if (!function_exists('get_plugins')) {
                 require_once ABSPATH . 'wp-admin/includes/plugin.php';
-                $this->pluginData = get_plugin_data(ABSPATH . 'wp-content/plugins/' . $this->plugin);
+                $this->plugin_data = get_plugin_data(ABSPATH . 'wp-content/plugins/' . $this->plugin);
             }
         }
     }
@@ -126,22 +126,22 @@ class Validator
     public function check(): bool
     {
         // Clear errors
-        $this->requirementsErrors = [];
+        $this->requirements_errors = [];
 
         // $this->check_required_extensions();
         if (is_admin()) {
             // Check PHP version
-            $this->checkPhpVersion();
+            $this->check_php_version();
 
             // Check PHP extensions
-            $this->checkRequiredExtensions();
+            $this->check_required_extensions();
 
             // run only if in admin
-            $this->checkRequiredPlugins();
+            $this->check_required_plugins();
         }
 
         // Check if have some error
-        $result = empty($this->requirementsErrors);
+        $result = empty($this->requirements_errors);
 
         // Show notice notification only if in admin page
         if (!$result && is_admin()) {
@@ -163,12 +163,12 @@ class Validator
      */
     public function pluginRequirementsNotices(): void
     {
-        if ($this->deactivateAutomatically) {
-            $this->revertActivation();
+        if ($this->deactivate_automatically) {
+            $this->revert_activation();
         }
 
         $list = "";
-        foreach ($this->requirementsErrors as $requirements_error) {
+        foreach ($this->requirements_errors as $requirements_error) {
             $list .= "<li>$requirements_error</li>";
         }
         printf('<div class="notice notice-error is-dismissible"><ul>%s</ul></div>', $list);
@@ -182,13 +182,13 @@ class Validator
      * @access protected
      * @since 1.0
      */
-    protected function checkRequiredExtensions(): void
+    protected function check_required_extensions(): void
     {
 
-        foreach ($this->requiredExtensions as $extension) {
+        foreach ($this->required_extensions as $extension) {
             if (!extension_loaded($extension)) {
-                $this->requirementsErrors[] = sprintf(__('Plugin<strong>%s</strong> requires <strong>%s</strong> PHP extension.', $this->text_domain),
-                    isset($this->pluginData['Name']) ? $this->pluginData['Name'] : $this->text_domain,
+                $this->requirements_errors[] = sprintf(__('Plugin<strong>%s</strong> requires <strong>%s</strong> PHP extension.', $this->text_domain),
+                    isset($this->plugin_data['Name']) ? $this->plugin_data['Name'] : $this->text_domain,
                     $extension);
             }
         }
@@ -200,22 +200,22 @@ class Validator
      * @access protected
      * @since 1.0
      */
-    protected function checkRequiredPlugins(): void
+    protected function check_required_plugins(): void
     {
         // projdu každý plugin, který potřebuji a zkontroluji ho
-        foreach ($this->requiredPlugins as $requirementPluginName => $requirementPluginVersion) {
+        foreach ($this->required_plugins as $requirementPluginName => $requirementPluginVersion) {
 
             // Check plugin and activation
             if (!is_plugin_active($requirementPluginName)) {
                 $message = sprintf(__('Plugin <strong>%s</strong> requires plugin <strong>%s</strong>, must be installed and activated.', $this->text_domain),
-                    isset($this->pluginData['Name']) ? $this->pluginData['Name'] : $this->text_domain, $requirementPluginName);
+                    isset($this->plugin_data['Name']) ? $this->plugin_data['Name'] : $this->text_domain, $requirementPluginName);
             } else {
                 // Check plugin version
                 $plugin_data = get_plugin_data(ABSPATH . 'wp-content/plugins/' . $requirementPluginName);
 
                 if (!version_compare($plugin_data['Version'], $requirementPluginVersion['version'], '>=')) {
                     $message = sprintf(__('Plugin <strong>%s</strong> requires plugin <strong>%s</strong> in version <strong>%s</strong> or later. Installed version is <strong>%s</strong>.', $this->text_domain),
-                        isset($this->pluginData['Name']) ? $this->pluginData['Name'] : $this->text_domain, $plugin_data['Name'], $requirementPluginVersion['version'], $plugin_data['Version']);
+                        isset($this->plugin_data['Name']) ? $this->plugin_data['Name'] : $this->text_domain, $plugin_data['Name'], $requirementPluginVersion['version'], $plugin_data['Version']);
                 }
             }
 
@@ -224,7 +224,7 @@ class Validator
                 if (isset($requirementPluginVersion['extra_error_message'])) {
                     $message .= ' ' . $requirementPluginVersion['extra_error_message'];
                 }
-                $this->requirementsErrors[$requirementPluginName] = $message;
+                $this->requirements_errors[$requirementPluginName] = $message;
             }
         }
     }
@@ -238,7 +238,7 @@ class Validator
      * @access private
      * @since 1.0
      */
-    private function revertActivation(): void
+    private function revert_activation(): void
     {
         if (isset($_GET['activate'])) {
             unset($_GET['activate']);
@@ -254,11 +254,11 @@ class Validator
      * @access private
      * @since 1.0
      */
-    private function checkPhpVersion(): void
+    private function check_php_version(): void
     {
-        if (PHP_VERSION < $this->requiredPhpVersion) {
-            $this->requirementsErrors[] = sprintf(__('Plugin requires PHP %s or newer.', $this->text_domain),
-                $this->requiredPhpVersion);
+        if (PHP_VERSION < $this->required_php_version) {
+            $this->requirements_errors[] = sprintf(__('Plugin requires PHP %s or newer.', $this->text_domain),
+                $this->required_php_version);
         }
     }
 
@@ -270,6 +270,7 @@ class Validator
      * @param $message null|string Additional text
      * @return Validator
      * @since 1.0
+     * @deprecated
      */
     public function addRequiredPlugin(string $plugin, string $version, $message = null): Validator
     {
@@ -280,9 +281,32 @@ class Validator
         if ($message) {
             $pluginRequired['extra_error_message'] = $message;
         }
-        $this->requiredPlugins[$plugin] = $pluginRequired;
+        $this->required_plugins[$plugin] = $pluginRequired;
         return $this;
     }
+
+    /**
+     * Add new required plugin
+     *
+     * @param $plugin string Plugin name path elementor-pro/elementor-pro.php
+     * @param $version string Version of plugin
+     * @param $message null|string Additional text
+     * @return Validator
+     * @since 1.1
+     */
+    public function add_required_plugin(string $plugin, string $version, $message = null): Validator
+    {
+        $plugin_required = [
+            'version' => $version,
+            // 'extra_error_message' => 'Update it from official web.',
+        ];
+        if ($message) {
+            $plugin_required['extra_error_message'] = $message;
+        }
+        $this->required_plugins[$plugin] = $plugin_required;
+        return $this;
+    }
+
 
     /**
      * Add new required PHP extension
@@ -290,10 +314,24 @@ class Validator
      * @param string $requiredExtension
      * @return Validator
      * @since 1.0
+     * @deprecated
      */
     public function addRequiredExtensions(string $requiredExtension): Validator
     {
-        $this->requiredExtensions[] = $requiredExtension;
+        $this->required_extensions[] = $requiredExtension;
+        return $this;
+    }
+
+    /**
+     * Add new required PHP extension
+     *
+     * @param string $required_extension
+     * @return Validator
+     * @since 1.1
+     */
+    public function add_required_extensions(string $required_extension): Validator
+    {
+        $this->required_extensions[] = $required_extension;
         return $this;
     }
 }
