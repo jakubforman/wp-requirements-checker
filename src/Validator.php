@@ -1,7 +1,14 @@
 <?php
 
-namespace AwwwesomeEEP\Includes;
+namespace jayjay666\WPRequirementsChecker;
 
+ /**
+  * Class Validator
+  *
+  * Lightweight validator library class for check PHP version, PHP extensions, plugins and theirs versions in Wordpress Plugins
+  *
+  * @package jayjay666\WPPluginRequirements
+  */
 class Validator
 {
     /**
