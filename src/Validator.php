@@ -1,15 +1,7 @@
 <?php
 
+namespace AwwwesomeEEP\Includes;
 
-namespace jayjay666\WPRequirementsChecker;
-
-/**
- * Class Validator
- *
- * Lightweight validator library class for check PHP version, PHP extensions, plugins and theirs versions in Wordpress Plugins
- *
- * @package jayjay666\WPPluginRequirements
- */
 class Validator
 {
     /**
@@ -92,8 +84,12 @@ class Validator
      * @param string $text_domain Text domain of plugin
      * @param bool $deactivate_automatically Can automatic deactivate plugin?
      */
-    public function __construct(string $required_php_version, string $plugin, string $text_domain, $deactivate_automatically = true)
-    {
+    public function __construct(
+        string $required_php_version,
+        string $plugin,
+        string $text_domain,
+        $deactivate_automatically = true
+    ) {
         // Set PHP version
         $this->required_php_version = $required_php_version;
 
@@ -111,7 +107,7 @@ class Validator
         if (is_admin()) {
             if (!function_exists('get_plugins')) {
                 require_once ABSPATH . 'wp-admin/includes/plugin.php';
-                $this->plugin_data = get_plugin_data(ABSPATH . 'wp-content/plugins/' . $this->plugin);
+                $this->plugin_data = get_plugin_data(WP_PLUGIN_DIR . "/" . $this->plugin);
             }
         }
     }
@@ -187,7 +183,8 @@ class Validator
 
         foreach ($this->required_extensions as $extension) {
             if (!extension_loaded($extension)) {
-                $this->requirements_errors[] = sprintf(__('Plugin<strong>%s</strong> requires <strong>%s</strong> PHP extension.', $this->text_domain),
+                $this->requirements_errors[] = sprintf(__('Plugin<strong>%s</strong> requires <strong>%s</strong> PHP extension.',
+                    $this->text_domain),
                     isset($this->plugin_data['Name']) ? $this->plugin_data['Name'] : $this->text_domain,
                     $extension);
             }
@@ -204,18 +201,25 @@ class Validator
     {
         // projdu každý plugin, který potřebuji a zkontroluji ho
         foreach ($this->required_plugins as $requirementPluginName => $requirementPluginVersion) {
-
             // Check plugin and activation
-            if (!is_plugin_active($requirementPluginName)) {
-                $message = sprintf(__('Plugin <strong>%s</strong> requires plugin <strong>%s</strong>, must be installed and activated.', $this->text_domain),
-                    isset($this->plugin_data['Name']) ? $this->plugin_data['Name'] : $this->text_domain, $requirementPluginName);
+            if (!($this->check_mu_plugin($requirementPluginName) || is_plugin_active($requirementPluginName))) {
+                $message = sprintf(__('Plugin <strong>%s</strong> requires plugin <strong>%s</strong>, must be installed and activated.',
+                    $this->text_domain),
+                    isset($this->plugin_data['Name']) ? $this->plugin_data['Name'] : $this->text_domain,
+                    $requirementPluginName);
             } else {
                 // Check plugin version
-                $plugin_data = get_plugin_data(ABSPATH . 'wp-content/plugins/' . $requirementPluginName);
+                if($this->check_mu_plugin($requirementPluginName)){
+                    $plugin_data = get_plugin_data(WPMU_PLUGIN_DIR . '/' . $requirementPluginName);
+                }else{
+                    $plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $requirementPluginName);
+                }
 
                 if (!version_compare($plugin_data['Version'], $requirementPluginVersion['version'], '>=')) {
-                    $message = sprintf(__('Plugin <strong>%s</strong> requires plugin <strong>%s</strong> in version <strong>%s</strong> or later. Installed version is <strong>%s</strong>.', $this->text_domain),
-                        isset($this->plugin_data['Name']) ? $this->plugin_data['Name'] : $this->text_domain, $plugin_data['Name'], $requirementPluginVersion['version'], $plugin_data['Version']);
+                    $message = sprintf(__('Plugin <strong>%s</strong> requires plugin <strong>%s</strong> in version <strong>%s</strong> or later. Installed version is <strong>%s</strong>.',
+                        $this->text_domain),
+                        isset($this->plugin_data['Name']) ? $this->plugin_data['Name'] : $this->text_domain,
+                        $plugin_data['Name'], $requirementPluginVersion['version'], $plugin_data['Version']);
                 }
             }
 
@@ -333,5 +337,16 @@ class Validator
     {
         $this->required_extensions[] = $required_extension;
         return $this;
+    }
+
+    /**
+     * Check if MU plugin exist
+     *
+     * @param $plugin
+     * @return bool
+     */
+    protected function check_mu_plugin($plugin): bool
+    {
+        return file_exists(WPMU_PLUGIN_DIR . '/' . $plugin);
     }
 }
