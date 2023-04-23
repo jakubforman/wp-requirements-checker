@@ -1,5 +1,7 @@
 # WP Requirements Checker
 
+[![Not Maintained](https://img.shields.io/badge/Maintenance%20Level-Not%20Maintained-yellow.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
+
 Lightweight validator library class for check PHP version, PHP extensions, plugins and theirs versions in Wordpress
 Plugins.
 
